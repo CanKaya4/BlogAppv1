@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
-import { useAuth } from '../../context/AuthContext';
+
 
 function Form() {
-    const { setIsAuthenticated } = useAuth();
+
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [remember, setRemember] = useState(false);

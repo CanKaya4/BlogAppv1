@@ -5,11 +5,10 @@ import ArticleList from "./pages/Admin/ArticleList,"
 import ArticleAdd from "./pages/Admin/ArticleAdd"
 import ArticleUpdate from "./pages/Admin/ArticleUpdate"
 import Login from "./pages/Login/Login"
-import { useAuth } from "./context/AuthContext"
+
 
 function App() {
-  const { isAuthenticated } = useAuth();
-  console.log(isAuthenticated)
+
   return (
     <Routes>
       <Route path="/login" element={<Login />} />

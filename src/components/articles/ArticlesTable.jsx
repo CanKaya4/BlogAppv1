@@ -4,6 +4,7 @@ import { CirclePlus, Edit, Search, Trash2 } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { getArticles } from '../../redux/admin/articleSlice';
+import axios from 'axios';
 
 function ArticlesTable() {
     const dispatch = useDispatch();
@@ -25,6 +26,29 @@ function ArticlesTable() {
         setSearchTerm(term);
         const filtered = articles.filter(item => item.name?.toLowerCase().includes(term) || item.category?.toLocaleLowerCase().includes(term));
         setFilteredArticles(filtered);
+    };
+
+    const safeDeleteArticle = async (id) => {
+        if (window.confirm("Bu makaleyi silmek istediğinize emin misiniz?")) { // Kullanıcıdan onay al
+            try {
+                const response = await axios.post('https://alikayablog.com.tr/api/Article/DeleteArticle', {
+                    id: id // JSON formatında id gönderiliyor
+                }, {
+                    headers: {
+                        'Content-Type': 'application/json', // İçerik tipini belirtiyoruz
+                        'Accept': '*/*' // Accept başlığı
+                    }
+                });
+
+                if (response.status === 200) {
+                    alert("Makale başarıyla silindi!");
+                    // Başarılı silme işlemi sonrası yapılacaklar
+                }
+            } catch (error) {
+                console.error("Silme işlemi başarısız:", error);
+                alert("Silme işlemi sırasında bir hata oluştu.");
+            }
+        }
     };
 
     const indexOfLastArticle = currentPage * articlesPerPage;
@@ -117,7 +141,12 @@ function ArticlesTable() {
                                     <button className='text-indigo-400 hover:text-indigo-300 mr-2' onClick={() => navigate(`/admin/articleupdate/${item.id}`)}>
                                         <Edit size={18} />
                                     </button>
-                                    <button className='text-red-400 hover:text-red-300 mr-2'><Trash2 size={18} /></button>
+                                    <button
+                                        onClick={() => safeDeleteArticle(item.id)} // Fonksiyonun referansını geç
+                                        className='text-red-400 hover:text-red-300 mr-2'
+                                    >
+                                        <Trash2 size={18} />
+                                    </button>
                                 </td>
                             </motion.tr>
                         ))}
