@@ -1,17 +1,49 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion';
-import { useState } from 'react';
 import axios from 'axios';
 
 function ArticleAddForm() {
 
     const [title, setTitle] = useState('');
     const [category, setCategory] = useState('');
+    const [categories, setCategories] = useState([]);
     const [tag, setTag] = useState('');
+    const [tags, setTags] = useState([]);
     const [keyword, setKeyword] = useState('');
     const [description, setDescription] = useState('');
     const [content, setContent] = useState('');
+
     const [isDeleted, setİsDeleted] = useState(false);
+    const [selectedCategory, setSelectedCategory] = useState(0);
+
+    // Kategorileri almak için useEffect
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const response = await axios.get('https://alikayablog.com.tr/api/Category/GetAllCategories'); // Kategorileri çeken API
+                setCategories(response.data); // Kategorileri state'e atıyoruz
+
+            } catch (error) {
+                console.error("Kategoriler alınırken bir hata oluştu:", error);
+            }
+        };
+
+        fetchCategories();
+
+    }, []);
+
+    useEffect(() => {
+        const fetchTags = async () => {
+            try {
+                const response = await axios.get('https://alikayablog.com.tr/api/Tag/GetAllTags'); // Kategorileri çeken
+                console.log(response.data)
+                setTags(response.data)
+            } catch (error) {
+                console.log(error)
+            }
+        }
+        fetchTags()
+    }, [])
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -21,9 +53,10 @@ function ArticleAddForm() {
                 content,
                 tagId: parseInt(tag), // Eğer tagId sayısal bir değer bekliyorsa, parseInt ile sayıya dönüştürülmesi gerekebilir.
                 keyword,
-                description: content, // Açıklama için içerik kullanılabilir veya başka bir state ekleyebilirsiniz.
+                description, // Açıklama için içerik kullanılabilir veya başka bir state ekleyebilirsiniz.
                 categoryIds: category.split(',').map(id => parseInt(id.trim())) // Kategoriler, virgülle ayrılmış bir string olarak girişi kabul edebilir.
             };
+            console.log(articleData)
             let response = await axios.post("https://alikayablog.com.tr/api/Article/CreateArticle", articleData);
             console.log("Article created:", response.data);
 
@@ -64,27 +97,31 @@ function ArticleAddForm() {
                 {/* Kategori */}
                 <div className='mb-4'>
                     <label className='block text-gray-400 mb-2'>Kategori</label>
-                    <input
-                        type="text"
-                        name="category"
+                    <select
                         value={category}
                         onChange={(e) => setCategory(e.target.value)}
                         className='w-full bg-gray-700 text-gray-100 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500'
-                        placeholder="Kategori girin"
-                    />
+                    >
+                        <option value="" disabled>Kategori Seçin</option>
+                        {categories.map((cat) => (
+                            <option key={cat.id} value={cat.id}>{cat.categoryName}</option> // Kategorileri burada gösteriyoruz
+                        ))}
+                    </select>
                 </div>
 
                 {/* Etiket */}
                 <div className='mb-4'>
                     <label className='block text-gray-400 mb-2'>Etiket</label>
-                    <input
-                        type="text"
-                        name="tag"
+                    <select
                         value={tag}
                         onChange={(e) => setTag(e.target.value)}
                         className='w-full bg-gray-700 text-gray-100 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500'
-                        placeholder="Etiket girin"
-                    />
+                    >
+                        <option value="" disabled>Kategori Seçin</option>
+                        {tags.map((tag) => (
+                            <option key={tag.id} value={tag.id}>{tag.name}</option> // Kategorileri burada gösteriyoruz
+                        ))}
+                    </select>
                 </div>
 
                 {/* Anahtar Kelimeler */}

@@ -15,10 +15,10 @@ function ArticleList() {
     useEffect(() => {
         const fetchTotalReads = async () => {
             try {
-                const response = await axios.get("http://localhost:5000/api/Article/GetTotalReadCount");
+                const response = await axios.get("https://alikayablog.com.tr/api/Article/GetTotalReadCount");
                 setTotalReads(response.data); // response.data kullanarak veriyi ayarlayın
 
-                const totalCount = await axios.get("http://localhost:5000/api/Article/GetTotalArticleCount");
+                const totalCount = await axios.get("https://alikayablog.com.tr/api/Article/GetTotalArticleCount");
                 setTotalCountArticle(totalCount.data);
             } catch (error) {
                 console.log(error);
